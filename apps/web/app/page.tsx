@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Home(){return <main><section className="hero"><div className="eyebrow">Educate LMS 2.0</div><h1>Learning infrastructure for every school.</h1><p>A new learning management system built for schools, universities, and educators. Designed for privacy, performance and a secure multi-tenant future.</p><span className="pill">Early development preview</span><p><Link href="/dashboard">Explore dashboard preview →</Link></p></section></main>}
