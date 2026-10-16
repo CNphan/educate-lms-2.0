@@ -1,0 +1,37 @@
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_USER: educate, POSTGRES_PASSWORD: test-only-password, POSTGRES_DB: educate}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd 'pg_isready -U educate' --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DJANGO_SECRET_KEY: testing-only-not-production
+      DJANGO_ALLOWED_HOSTS: localhost
+      DATABASE_URL: postgresql://educate:test-only-password@localhost:5432/educate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -r apps/api/requirements.txt
+      - run: python apps/api/manage.py test
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build
